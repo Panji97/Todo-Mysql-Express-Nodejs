@@ -14,7 +14,7 @@ router.route("/activity-groups").get(getAllActivity).post(createActivity);
 router
   .route("/activity-groups/:id")
   .get(getActivityById)
-  .patch(updateActivity)
+  .put(updateActivity)
   .delete(deleteActivity);
 
 module.exports = router;

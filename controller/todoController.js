@@ -3,7 +3,6 @@ const Activity = require("../model/activity");
 
 exports.getAllTodos = async (req, res) => {
   try {
-    const { activity_group_id } = req.query;
     const response = await Todo.findAll({
       attributes: {
         exclude: ["createdAt", "updatedAt", "ActivityId"],

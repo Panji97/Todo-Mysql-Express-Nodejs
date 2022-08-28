@@ -11,7 +11,10 @@ exports.getAllActivity = async (req, res) => {
       data: response,
     });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({
+      status: "Failed",
+      message: error,
+    });
   }
 };
 
@@ -23,13 +26,25 @@ exports.getActivityById = async (req, res) => {
         id: req.params.id,
       },
     });
-    res.status(200).json({
-      status: "Success",
-      message: "Success",
-      data: response,
-    });
+
+    if (!response) {
+      res.status(404).json({
+        status: "Not Found",
+        message: `Activity with ID ${req.params.id} Not Found`,
+        data: {},
+      });
+    } else {
+      res.status(200).json({
+        status: "Success",
+        message: "Success",
+        data: response,
+      });
+    }
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({
+      status: "Failed",
+      message: error,
+    });
   }
 };
 
@@ -40,19 +55,24 @@ exports.createActivity = async (req, res) => {
       title,
       email,
     });
+
     const response = await Activity.findOne({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+      attributes: { exclude: ["createdAt", "updatedAt", "deleted_at"] },
       where: {
         id: data.id,
       },
     });
+
     res.status(200).json({
       status: "Success",
       message: "Success",
       data: response,
     });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(400).json({
+      status: "Bad Request",
+      message: "Title cannot be null",
+    });
   }
 };
 
@@ -63,6 +83,14 @@ exports.updateActivity = async (req, res) => {
         id: req.params.id,
       },
     });
+
+    if (!data)
+      res.status(404).json({
+        status: "Not Found",
+        message: `Activity with ID ${req.params.id} Not Found`,
+        data: {},
+      });
+
     await Activity.update(req.body, {
       where: {
         id: data.id,
@@ -96,9 +124,9 @@ exports.deleteActivity = async (req, res) => {
         id: result.id,
       },
     });
-    res.status(404).json({
-      status: "Not Found",
-      message: `Activity with ID ${req.params.id} Not Found`,
+    res.status(200).json({
+      status: "Success",
+      message: `Success`,
       data: {},
     });
   } catch (error) {
